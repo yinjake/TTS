@@ -3,182 +3,218 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
 
-    <HorizontalScrollView
+    <TextView
+        android:id="@+id/tvState"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:text="状态：%s" />
 
-        <LinearLayout
-            android:minHeight="48dp"
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/tvSoundSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="声音大小：%s" />
 
-            <Button
-                android:id="@+id/btn_set_tts"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/set_tts" />
-
-            <Switch
-                android:id="@+id/switch_use_preview"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/use_preview" />
-
-            <Button
-                android:id="@+id/btn_kill_battery"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/kill_battery"
-                android:visibility="gone" />
-
-            <Switch
-                style="?android:attr/buttonBarButtonStyle"
-                android:id="@+id/switch_use_custom_voice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/use_custom_language" />
-
-            <Switch
-                style="?android:attr/buttonBarButtonStyle"
-                android:id="@+id/switch_use_dict"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/use_dict" />
-
-
-
-            <Switch
-                style="?android:attr/buttonBarButtonStyle"
-                android:id="@+id/switch_use_split_sentence"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/split_sentence" />
-
-
-        </LinearLayout>
-    </HorizontalScrollView>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:background="#666" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/tts_voice_style"
-        android:visibility="visible" />
+        android:text="请选择音频格式：" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_voice_styles"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible" />
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="@string/tts_voice_style_degree" />
-
-        <TextView
-            android:id="@+id/tts_style_degree_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:hint="100"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/tts_style_degree_parent"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/tts_style_degree_reduce"
-            android:layout_width="32dp"
-            android:background="@drawable/ic_reduce"
-            android:layout_height="32dp"
-            android:layout_margin="8dp" />
-
-        <SeekBar
-            android:layout_gravity="center_vertical"
-            android:layout_margin="0dp"
-            android:adjustViewBounds="true"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:layout_weight="1"
-            android:id="@+id/tts_style_degree"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:thumbOffset="0dp"
-            android:max="200"
-            android:min="1"
-
-            android:visibility="visible"
-            tools:targetApi="o" />
-
-        <Button
-            android:id="@+id/tts_style_degree_add"
-            android:layout_width="32dp"
-            android:background="@drawable/ic_add"
-            android:layout_height="32dp"
-            android:layout_margin="8dp" />
-    </LinearLayout>
-
-    <LinearLayout
+    <RadioGroup
+        android:id="@+id/rgAudioFormat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/tts_voice_volume_reduce"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/ic_reduce" />
-
-        <SeekBar
-            android:id="@+id/tts_voice_volume"
-            android:layout_width="0dp"
+        <RadioButton
+            android:id="@+id/rbPcm"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:max="100"
-            android:min="1"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:thumbOffset="0dp"
-            android:visibility="visible"
-            tools:targetApi="o" />
+            android:paddingEnd="20dp"
+            android:text=".pcm" />
 
-        <Button
-            android:id="@+id/tts_voice_volume_add"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/ic_add" />
+        <RadioButton
+            android:id="@+id/rbMp3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="20dp"
+            android:text=".mp3" />
 
-    </LinearLayout>
+        <RadioButton
+            android:id="@+id/rbWav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:paddingEnd="20dp"
+            android:text=".wav" />
 
+    </RadioGroup>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_voice_actors"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:background="#666" />
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:numColumns="2" />
+        android:text="请选择音频采样率：" />
 
+    <RadioGroup
+        android:id="@+id/rgSimpleRate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb8K"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="20dp"
+            android:text="8000Hz" />
+
+        <RadioButton
+            android:id="@+id/rb16K"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:paddingEnd="20dp"
+            android:text="16000Hz" />
+
+        <RadioButton
+            android:id="@+id/rb44K"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="20dp"
+            android:text="44100Hz" />
+    </RadioGroup>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:background="#666" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="请选择音频位宽：" />
+
+    <RadioGroup
+        android:id="@+id/tbEncoding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb8Bit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="20dp"
+            android:text="8 Bit" />
+
+        <RadioButton
+            android:id="@+id/rb16Bit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:paddingEnd="20dp"
+            android:text="16Bit" />
+    </RadioGroup>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="#666" />
+
+    <Button
+        android:id="@+id/btRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="录音" />
+
+    <Button
+        android:id="@+id/btStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="停止" />
+    <Button
+        android:id="@+id/btreg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="识别" />
+
+    <com.main.zlw.zlwaudiorecorder.AudioView
+        android:id="@+id/audioView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="可视化样式(上)：" />
+
+            <Spinner
+                android:id="@+id/spUpStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="可视化样式(下)：" />
+
+            <Spinner
+                android:id="@+id/spDownStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/jumpTestActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="全屏显示--->>" />
 
 </LinearLayout>
