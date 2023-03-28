@@ -1,11 +1,23 @@
 package com.freelycar.voice.audiorecorder.countdowntimer;
 
+import android.content.Context;
+import android.os.Environment;
+import android.os.Handler;
+
 import com.freelycar.voice.audiorecorder.MyLogUtils;
 
 public class startTimerUtils {
     private static final String TAG = "startTimerUtils";
     private static CountDownTimerSupport mTimer;
     static long millisInFuture = 60000L;
+
+    private static Handler mHandler;
+    private Context mContext;
+
+    public startTimerUtils(Context context, Handler handler) {
+        this.mContext = context;
+        mHandler = handler;
+    }
 
     public static void clickStart(long mills) {
         if (mTimer != null) {
@@ -22,12 +34,16 @@ public class startTimerUtils {
             public void onTick(long millisUntilFinished) {
                 MyLogUtils.file(TAG,millisUntilFinished + "ms\n" + millisUntilFinished / 1000 + "s");
                 MyLogUtils.file(TAG,"CountDownTimerSupport:   "+"onTick : " + millisUntilFinished + "ms");
+                mHandler.sendMessage(mHandler.obtainMessage(100));
+                mHandler.sendMessage(mHandler.obtainMessage(200));
             }
 
             @Override
             public void onFinish() {
                 MyLogUtils.file(TAG,"倒计时已结束");
                 MyLogUtils.file(TAG,"CountDownTimerSupport:   " +"onFinish");
+                mHandler.sendMessage(mHandler.obtainMessage(100));
+
             }
 
             @Override

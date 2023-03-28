@@ -1,20 +1,31 @@
 package com.freelycar.voice.audiorecorder;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.media.AudioFormat;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.ParcelUuid;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +35,7 @@ import com.freelycar.voice.audiorecorder.asrt.Sdk;
 import com.freelycar.voice.audiorecorder.asrt.common.Common;
 import com.freelycar.voice.audiorecorder.asrt.models.AsrtApiResponse;
 import com.freelycar.voice.audiorecorder.asrt.models.Wave;
+import com.freelycar.voice.audiorecorder.countdowntimer.startTimerUtils;
 import com.freelycar.voice.audiorecorder.text2speech.FreeTts;
 import com.freelycar.voice.audiorecorder.text2speech.MediaTTSManager;
 import com.yanzhenjie.permission.AndPermission;
@@ -39,6 +51,7 @@ import com.freelycar.voice.recorderlib.recorder.listener.RecordStateListener;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -81,11 +94,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private static final String port = "20001";
     private static final String protocol = "http";
 
+    private String musicName; // 音乐文件名
+    private List<Music> musicList; // 音乐列表（数据源）
+    private MusicAdapter adapter; // 音乐适配器
+    private MyApp app; // 音乐播放器应用程序对象
+    private MusicReceiver receiver;//音乐广播接收器
+
     private boolean isStart = false;
     private boolean isPause = false;
     final RecordManager recordManager = RecordManager.getInstance();
     private static final String[] STYLE_DATA = new String[]{"STYLE_ALL", "STYLE_NOTHING", "STYLE_WAVE", "STYLE_HOLLOW_LUMP"};
-    private MediaTTSManager helper;
+    private startTimerUtils helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 //        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 //        StrictMode.setThreadPolicy(policy);
         whyTTS = MediaTTSManager.getInstance(this,mHandler);
-        //helper = new MediaTTSManager(mHandler);
+        helper = new startTimerUtils(this,mHandler);
         ButterKnife.bind(this);
         initAudioView();
         initEvent();
@@ -110,6 +129,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         initAudoRe();
     }
 
+    public void initMusic(){
+        // 获取音乐播放器应用程序对象
+        app = (MyApp) getApplication();
+        // 定义存储读写权限数组
+        String[] PERMISSIONS_STORAGE = {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+        // 检查是否有读权限
+        final int permission = ActivityCompat.checkSelfPermission(this, PERMISSIONS_STORAGE[0]);
+        // 如果没有授权，那么就请求读权限
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, 0);
+            return;
+        }
+        //执行填充音乐列表的异步任务
+        new FillMusicListTask().execute();
+
+        //创建音乐广播接收器
+        receiver = new MusicReceiver();
+        //创建意图过滤器
+        IntentFilter filter = new IntentFilter();
+        //通过意图过滤器添加广播频道
+        filter.addAction(AppConstants.INTENT_ACTION_UPDATE_PROGRESS);
+        //注册音乐广播接收器
+        registerReceiver(receiver,filter);
+    }
 
     public void initAudoRe() {
         recordManager.changeFormat(RecordConfig.RecordFormat.WAV);
@@ -170,34 +216,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     onTestReg();
                     break;
                 case 400:
-                    startReg();
+                  //  startReg();
                     break;
             }
         }
     }
 
-    public void startReg() {
-        // runOnUiThread(new Runnable() {
-        //  public void run() {
-        //timer.cancel();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                // doStop();
-                mHandler.sendMessage(mHandler.obtainMessage(100));
-                mySleep(100);
-                //doPlay();
-                mHandler.sendMessage(mHandler.obtainMessage(200));
-                //doReg
-                //  mHandler.sendMessage(mHandler.obtainMessage(300));
-                MyLogUtils.file(TAG, "倒计时进行中。 ");
-            }
-        };
-        timer.schedule(task, 0, 6000);
-        MyLogUtils.file(TAG, "倒计时结束了... ");
-        //    }
-        // });
-    }
+//    public void startReg() {
+//        // runOnUiThread(new Runnable() {
+//        //  public void run() {
+//        //timer.cancel();
+//        TimerTask task = new TimerTask() {
+//            @Override
+//            public void run() {
+//                // doStop();
+//                mHandler.sendMessage(mHandler.obtainMessage(100));
+//                mySleep(100);
+//                //doPlay();
+//                mHandler.sendMessage(mHandler.obtainMessage(200));
+//                //doReg
+//                //  mHandler.sendMessage(mHandler.obtainMessage(300));
+//                MyLogUtils.file(TAG, "倒计时进行中。 ");
+//            }
+//        };
+//        timer.schedule(task, 0, 6000);
+//        MyLogUtils.file(TAG, "倒计时结束了... ");
+//        //    }
+//        // });
+//    }
 
     private synchronized void mySleep(long t) {
         try {
@@ -213,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         MyLogUtils.file(TAG, " onResume ");
         doStop();
         initRecordEvent();
-        startReg();
+      //  startReg();
     }
 
     @Override
@@ -238,6 +284,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         timer.cancel();
         whyTTS.release();
         mHandler.removeCallbacksAndMessages(null);
+
+        //停止音乐播放服务
+        stopService(new Intent(MainActivity.this, MusicPlayService.class));
+        //注销广播接收器
+        if(receiver != null){
+            unregisterReceiver(receiver);
+        }
     }
 
 
@@ -518,4 +571,121 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onNothingSelected(AdapterView<?> parent) {
         //nothing
     }
+
+
+    /**
+     * 填充音乐列表异步任务类
+     */
+    private class FillMusicListTask extends AsyncTask<Void, Integer, Void> {
+        /**
+         * 耗时工作执行前
+         */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // 显示扫描音乐进度条
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // 获取音乐列表
+            musicList = app.getMusicList();
+            // 故意耗时，要不然扫描太快结束
+            for (long i = 0; i < 2000000000; i++) {
+            }
+            return null;
+        }
+
+        /**
+         * 耗时工作执行后
+         *
+         * @param aVoid
+         */
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            // 判断音乐列表是否有元素
+            if (musicList.size() > 0) {
+                // 创建音乐适配器
+                adapter = new MusicAdapter(MainActivity.this, musicList);
+                // 获取当前要播放的音乐名（默认是音乐播放列表的第一首）
+                musicName = musicList.get(0).getMusicName();
+                //创建意图，用于启动音乐服务
+                Intent intent = new Intent(MainActivity.this, MusicPlayService.class);
+                //按意图启动服务
+                startService(intent);
+
+            } else {
+                // 提示用户没有音乐文件
+                Toast.makeText(MainActivity.this, "外置存储卡上没有音乐文件！", Toast.LENGTH_SHORT);
+            }
+        }
+    }
+
+    /**
+     * 音乐广播接收器
+     */
+    private class MusicReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent){
+            //获取广播频道
+            String action = intent.getAction();
+            //判断广播频道是否为空
+            if (action != null){
+                //根据不同广播频道执行不同操作
+                if(AppConstants.INTENT_ACTION_UPDATE_PROGRESS.equals(action)){
+                    //获取播放时长
+                    int duration = intent.getIntExtra(AppConstants.DURATION,0);
+                    //获取播放控制图标
+              //      int controLIcon = intent.getIntExtra(AppConstants.CONTROL_ICON,R.drawable.play_button_selector);
+                    //计算进度值
+                    int progress = app.getCurrentPosition() * 100 / duration;
+                    //获取音乐名
+                    musicName = app.getMusicList().get(app.getCurrentMusicIndex()).getMusicName();
+                }
+            }
+        }
+    }
+    /**
+     * 上一首按钮单击事件处理方法
+     *
+     * @param view
+     */
+    public void doPrevious(View view)  {
+        //创建意图
+        Intent intent = new Intent();
+        //设置广播频道
+        intent.setAction(AppConstants.INTENT_ACTION_PREVIOUS);
+        //按意图发送广播
+        sendBroadcast(intent);
+    }
+
+    /**
+     * 下一首按钮单击事件处理方法
+     *
+     * @param view
+     */
+    public void doNext(View view)  {
+        //创建意图
+        Intent intent = new Intent();
+        //设置广播频道
+        intent.setAction(AppConstants.INTENT_ACTION_NEXT);
+        //按意图发送广播
+        sendBroadcast(intent);
+    }
+    /**
+     * 播放|暂停按钮单击事件处理方法
+     *
+     * @param view
+     */
+    public void doPlayOrPause(View view)  {
+        //创建意图
+        Intent intent = new Intent();
+        //设置广播频道
+        intent.setAction(AppConstants.INTENT_ACTION_PLAY_OR_PAUSE);
+        //按意图发送广播
+        sendBroadcast(intent);
+    }
+
 }
