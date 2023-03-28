@@ -1,6 +1,6 @@
 package com.freelycar.voice.audiorecorder;
 
-public class AppConstants {
+public interface AppConstants {
     static String TAG = "com.freelycar.music"; // 应用程序标记
     static String INTENT_ACTION_PREVIOUS = TAG + ".intent.action.PREVIOUS"; // 广播频道常量：播放上一首
     static String INTENT_ACTION_PLAY = TAG + ".intent.action.PLAY"; // 广播频道常量：播放
