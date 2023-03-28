@@ -1,6 +1,6 @@
 package fftlib;
 
-import com.zlw.main.recorderlib.utils.Logger;
+import com.freelycar.voice.recorderlib.utils.Logger;
 
 /**
  * FFT 数据处理工厂

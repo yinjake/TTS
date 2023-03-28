@@ -161,7 +161,7 @@
         android:layout_height="wrap_content"
         android:text="识别" />
 
-    <com.main.zlw.zlwaudiorecorder.AudioView
+    <com.freelycar.voice.audiorecorder.AudioView
         android:id="@+id/audioView"
         android:layout_width="match_parent"
         android:layout_height="150dp" />
