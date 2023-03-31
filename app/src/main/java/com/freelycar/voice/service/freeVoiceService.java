@@ -1,12 +1,16 @@
 package com.freelycar.voice.service;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetFileDescriptor;
 import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
@@ -51,6 +55,7 @@ public class freeVoiceService extends Service {
 
     static MyHandler mHandler;
     private FreeTts whyTTS;
+    private MediaPlayer mMediaPlayer;
 
     private static final String host = "123.60.169.72";
     private static final String port = "20001";
@@ -89,6 +94,8 @@ public class freeVoiceService extends Service {
 //        StrictMode.setThreadPolicy(policy);
         whyTTS = MediaTTSManager.getInstance(this, mHandler);
         helper = new startTimerUtils(this, mHandler);
+        mMediaPlayer = new MediaPlayer();
+        getAssetsFiles((MyApp) MyApp.getContext(), "a");//获取assets列表
         initRecord();
 //        AndPermission.with(this)
 //                .runtime()
@@ -104,7 +111,7 @@ public class freeVoiceService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
         MyLogUtils.file(TAG, "onStartCommand ");
-        startTimerUtils.clickStart(5000);
+        startTimerUtils.clickStart(3000);
         mHandler.sendMessage(mHandler.obtainMessage(200));
         return Service.START_NOT_STICKY;
     }
@@ -159,50 +166,73 @@ public class freeVoiceService extends Service {
 
     private void onTestReg() {
         new Thread(() -> {
+            MyLogUtils.file(TAG, " start onTestReg: ");
             BaseSpeechRecognizer sr = Sdk.GetSpeechRecognizer(host, port, protocol);
-            //String filename = "/storage/emulated/0/Record/com.freelycar.voice/data.wav";
             AsrtApiResponse rsp;
-            rsp = sr.RecogniteFile("/storage/emulated/0/Record/com.freelycar.voice/data.wav");
-            MyLogUtils.file(TAG, "目录 : " + recordManager.getRecordConfig().getRecordDir());
-            System.out.println(rsp.statusCode);
-            System.out.println(rsp.statusMessage);
-            System.out.println(rsp.result);
-            MyLogUtils.file(TAG, " 识别结果: " + rsp.result);
-            //Toast.makeText(this, "识别结果: " + rsp.result, Toast.LENGTH_SHORT).show();
-            if (rsp.result != null) {
-                startSpeaker((String) rsp.result);
-                if (rsp.result.equals("开门") || rsp.result.equals("打开柜门") || rsp.result.equals("开柜门")) {
-                    sendRequestTestCon(0);
-                } else if (rsp.result.equals("一号柜门") || rsp.result.equals("一号门")) {
-                    sendRequestTestCon(1);
-                } else if (rsp.result.equals("二号柜门") || rsp.result.equals("二号门")) {
-                    sendRequestTestCon(2);
-                } else if (rsp.result.equals("三号柜门") || rsp.result.equals("三号门")) {
-                    sendRequestTestCon(3);
-                } else if (rsp.result.equals("四号柜门") || rsp.result.equals("四号门")) {
-                    sendRequestTestCon(4);
-                } else if (rsp.result.equals("五号柜门") || rsp.result.equals("五号门")) {
-                    sendRequestTestCon(5);
-                } else if (rsp.result.equals("六号柜门") || rsp.result.equals("六号门")) {
-                    sendRequestTestCon(6);
-                }
+            if (sr != null) {
+                rsp = sr.RecogniteFile("/storage/emulated/0/Record/com.freelycar.voice/data.wav");
+                MyLogUtils.file(TAG, "目录 : " + recordManager.getRecordConfig().getRecordDir());
+                System.out.println(rsp.statusCode);
+                System.out.println(rsp.statusMessage);
+                System.out.println(rsp.result);
+                MyLogUtils.file(TAG, " 识别结果: " + rsp.result);
+                if (rsp.result != null) {
+                    startSpeaker((String) rsp.result);
 
-                if (rsp.result.equals("音乐") || rsp.result.equals("播放音乐") || rsp.result.equals("music")) {
-                    doPlayOrPause();
+                    if ("黄习".equals(rsp.result) || "黄xi".equals(rsp.result) || "黄习傻子".equals(rsp.result)) {
+                        startSpeaker("骂人是不对的哦 ，但是我很认同你这句话");
+                    }
+                    if ("黄老师".equals(rsp.result)) {
+                        startSpeaker("你就别偷吃东西啦");
+                    }
+                    if ("黄老师怎么样".equals(rsp.result)) {
+                        startSpeaker("要是能多带些零食来找我们，我会更喜欢你，么么哒");
+                    }
+                    if ("晕哥".equals(rsp.result)||"赟哥".equals(rsp.result)||"yun 哥".equals(rsp.result)) {
+                        startSpeaker("那是无敌的存在,我永远的神");
+                    }
+                    if ("小yin".equals(rsp.result) || "小因".equals(rsp.result) || "小殷怎么样".equals(rsp.result)) {
+                        startSpeaker("是我爸爸");
+                    }
+                    if ("你的名字".equals(rsp.result) || "你叫什么".equals(rsp.result)) {
+                        startSpeaker("我叫小易不爱车，或者叫我小易爱车也行");
+                    }
+
+                    if (rsp.result.equals("开门") || rsp.result.equals("打开柜门") || rsp.result.equals("开柜门")) {
+                        startSpeaker("你得告诉我开几号门我才能知道啊");
+                    } else if (rsp.result.equals("一号柜门") || rsp.result.equals("一号门")) {
+                        sendRequestTestCon(1);
+                    } else if (rsp.result.equals("二号柜门") || rsp.result.equals("二号门")) {
+                        sendRequestTestCon(2);
+                    } else if (rsp.result.equals("三号柜门") || rsp.result.equals("三号门")) {
+                        sendRequestTestCon(3);
+                    } else if (rsp.result.equals("四号柜门") || rsp.result.equals("四号门")) {
+                        sendRequestTestCon(4);
+                    } else if (rsp.result.equals("五号柜门") || rsp.result.equals("五号门")) {
+                        sendRequestTestCon(5);
+                    } else if (rsp.result.equals("六号柜门") || rsp.result.equals("六号门")) {
+                        sendRequestTestCon(6);
+                    }
+
+                    if (rsp.result.equals("音乐") || rsp.result.equals("播放音乐") || rsp.result.equals("music")) {
+                        doPlayOrPause();
+                    }
+                    if (rsp.result.equals("停止播放") || rsp.result.equals("暂停")) {
+                        doPlayOrPause();
+                    }
+                    if (rsp.result.equals("下一首")) {
+                        doNext();
+                        MyLogUtils.file(TAG, "下一首");
+                    }
+                    if (rsp.result.equals("上一首")) {
+                        doPrevious();
+                    }
+                    if (rsp.result.equals("今天天气")) {
+                        startSpeaker("阴，东南方转东风 4-5级，晚上可能有雨！");
+                    }
                 }
-                if (rsp.result.equals("停止播放") || rsp.result.equals("暂停")) {
-                    doPlayOrPause();
-                }
-                if (rsp.result.equals("下一首")) {
-                    doNext();
-                    MyLogUtils.file(TAG, "下一首");
-                }
-                if (rsp.result.equals("上一首")) {
-                    doPrevious();
-                }
-                if (rsp.result.equals("今天天气")) {
-                    startSpeaker("多云转阴，东南方转东风 4-5级，晚上可能有雨！");
-                }
+            }else{
+                MyLogUtils.file(TAG,"startReg sr is null");
             }
         }).start();
     }
@@ -221,6 +251,7 @@ public class freeVoiceService extends Service {
             if (msg.obj != null) {
                 //
             }
+            MyLogUtils.file(TAG, "handleMessage: " + msg.what);
             switch (msg.what) {
                 case 100:
                     doStop();
@@ -246,7 +277,7 @@ public class freeVoiceService extends Service {
         mHandler.removeCallbacksAndMessages(null);
 
         //停止音乐播放服务
-        stopService(new Intent(this, MusicPlayService.class));
+        //stopService(new Intent(this, MusicPlayService.class));
         //注销广播接收器
         if (receiver != null) {
             unregisterReceiver(receiver);
@@ -267,30 +298,23 @@ public class freeVoiceService extends Service {
             @Override
             public void onStateChange(RecordHelper.RecordState state) {
                 Logger.i(TAG, "onStateChange %s", state.name());
-
                 switch (state) {
                     case PAUSE:
-
                         MyLogUtils.file(TAG, "暂停中： ");
                         break;
                     case IDLE:
-
                         MyLogUtils.file(TAG, "空闲中");
                         break;
                     case RECORDING:
-
                         MyLogUtils.file(TAG, "录音中");
                         break;
                     case STOP:
-
                         MyLogUtils.file(TAG, "停止");
                         break;
                     case FINISH:
-
                         MyLogUtils.file(TAG, "录音结束");
                         MyLogUtils.file(TAG, "---");
                         mHandler.sendMessage(mHandler.obtainMessage(300));
-                        // timer.cancel();
                         break;
                     default:
                         break;
@@ -482,4 +506,50 @@ public class freeVoiceService extends Service {
         BroadcastUtils.sendBroadCast(AppConstants.INTENT_ACTION_PLAY_OR_PAUSE);
     }
 
+
+    public static String[] getAssetsFiles(MyApp activity, String assetsName) {
+        String[] subFile = null;
+        try {
+            subFile = activity.getAssets().list(assetsName);
+            MyLogUtils.file(TAG, "getAssetsFiles列表: " + subFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            MyLogUtils.file(TAG, "getAssetsFiles fail: ");
+        }
+        return subFile;
+    }
+
+    //本地app中的assets文件夹有music_1.mp3的文件，那么怎么获取文件引用，并直接播放这个文件呢
+    private void playMusic(boolean play) {
+        try {
+            if (mMediaPlayer == null) {
+                mMediaPlayer = new MediaPlayer();
+                //AssetFileDescriptor afd = getAssetFileDescriptor(name);
+                AssetFileDescriptor mAssetFD = getAssets().openFd("xxx.mp3");//打开音乐文件
+                mMediaPlayer.setDataSource(mAssetFD.getFileDescriptor(), mAssetFD.getStartOffset(), mAssetFD.getLength());//设置音源
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);//输出类型为通话
+            }
+            if (play) {
+                mMediaPlayer.prepare();
+                mMediaPlayer.setLooping(true);//循环播放
+                //mMediaPlayer.setVolume(maxVolume,maxVolume);
+                //mMediaPlayer.start();//开始播放
+                mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mMediaPlayer.start();
+                        MyLogUtils.file(TAG, "onPrepared:" + mMediaPlayer.getDuration());
+                    }
+                });
+                //需使用异步缓冲
+                mMediaPlayer.prepareAsync();
+            } else {
+                mMediaPlayer.release();//停止播放
+            }
+
+        } catch (Exception e) {
+            MyLogUtils.file(TAG, "receiver mMediaPlayer Exception:");
+            e.printStackTrace();
+        }
+    }
 }

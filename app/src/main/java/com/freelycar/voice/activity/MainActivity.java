@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    private void onTestReg() {
+    public void onTestReg(View view) {
         new Thread(() -> {
             BaseSpeechRecognizer sr = Sdk.GetSpeechRecognizer(host, port, protocol);
             AsrtApiResponse rsp = null;
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     doPlay();
                     break;
                 case 300:
-                    onTestReg();
+                    //onTestReg();
                     break;
                 case 400:
                     //  startReg();
@@ -310,9 +310,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //  whyTTS.release();
         //  mHandler.removeCallbacksAndMessages(null);
 
-        //停止音乐播放服务
-        //  stopService(new Intent(MainActivity.this, MusicPlayService.class));
-        //注销广播接收器
+//        停止音乐播放服务
+        stopService(new Intent(MainActivity.this, MusicPlayService.class));
+        stopService(new Intent(MainActivity.this, freeVoiceService.class));
+//        注销广播接收器
         // if (receiver != null) {
         //       unregisterReceiver(receiver);
         //    }
@@ -466,13 +467,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 // printClass();
                 doPrevious(null);
                 break;
-            case R.id.btreg:
-                // Android 4.0 之后不能在主线程中请求 HTTP 请求
-//                new Thread(() -> {
-//                    onStartReg();
-//                }).start();
-                doPlayOrPause(null);//音乐播放或暂停
-                break;
+//            case R.id.btreg:
+//                // Android 4.0 之后不能在主线程中请求 HTTP 请求
+////                new Thread(() -> {
+////                    onStartReg();
+////                }).start();
+//                doPlayOrPause(null);//音乐播放或暂停
+//                break;
             case R.id.jumpTestActivity:
                 startActivity(new Intent(this, TestHzActivity.class));
             default:

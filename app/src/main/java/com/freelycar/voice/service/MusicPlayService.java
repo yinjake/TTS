@@ -23,7 +23,7 @@ public class MusicPlayService extends Service implements AppConstants {
     private MediaPlayer mp;
     private String musicName;
     private Thread thread;
-    private boolean isRunning;
+    private boolean isRunning = true;
     private List<Music> musicList;
     private MyApp app;
     private MyMusicReceiver receiver;
@@ -38,7 +38,7 @@ public class MusicPlayService extends Service implements AppConstants {
         super.onCreate();
         app = (MyApp) getApplication();
         musicList = app.getMusicList();
-        MyLogUtils.file(TAG,"onCreate: "+musicList);
+        MyLogUtils.file(TAG, "onCreate: " + musicList);
         mp = new MediaPlayer();
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -48,23 +48,28 @@ public class MusicPlayService extends Service implements AppConstants {
                 nextMusic();
             }
         });
-        isRunning = true;
+
         thread = new Thread((Runnable) () -> {
             while (isRunning) {
-                if (mp.isPlaying()) {
-                    Intent intent = new Intent();
-                    intent.setAction(INTENT_ACTION_UPDATE_PROGRESS);
-                    app.setCurrentPosition(mp.getCurrentPosition());
-                    intent.putExtra(DURATION, mp.getDuration());
-                    sendBroadcast(intent);
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                try {
+                    if (mp.isPlaying()) {
+                        Intent intent = new Intent();
+                        intent.setAction(INTENT_ACTION_UPDATE_PROGRESS);
+                        app.setCurrentPosition(mp.getCurrentPosition());
+                        intent.putExtra(DURATION, mp.getDuration());
+                        sendBroadcast(intent);
+//                        try {
+//                            Thread.sleep(500);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
                     }
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
                 }
             }
         });
+
         thread.start();
         receiver = new MyMusicReceiver();
         IntentFilter filter = new IntentFilter();
@@ -78,11 +83,11 @@ public class MusicPlayService extends Service implements AppConstants {
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
         musicName = musicList.get(app.getCurrentMusicIndex()).getMusicName();
-        MyLogUtils.file(TAG,"onStartCommand: "+musicName);
+        MyLogUtils.file(TAG, "onStartCommand: " + musicName);
         try {
             mp.setDataSource(musicName);
             mp.prepare();
-            app.setCurrentPosition(0);
+            app.setCurrentPosition(1);
             Intent intent1 = new Intent();
             intent1.setAction(INTENT_ACTION_UPDATE_PROGRESS);
             intent1.putExtra(DURATION, mp.getDuration());
@@ -103,7 +108,7 @@ public class MusicPlayService extends Service implements AppConstants {
         unregisterReceiver(receiver);
         isRunning = false;
         thread.interrupt();
-       // thread = null;
+        thread = null;
     }
 
     private void play() {
@@ -154,11 +159,11 @@ public class MusicPlayService extends Service implements AppConstants {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            MyLogUtils.file(TAG,"MyMusicReceiver: "+action);
+            MyLogUtils.file(TAG, "MyMusicReceiver: " + action);
             if (action != null) {
                 switch (action) {
                     case INTENT_ACTION_PLAY:
-                        app.setCurrentPosition(0);
+                        app.setCurrentPosition(1);
                         play();
                         break;
                     case INTENT_ACTION_PLAY_OR_PAUSE:
