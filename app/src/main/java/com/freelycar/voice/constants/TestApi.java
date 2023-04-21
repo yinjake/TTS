@@ -6,6 +6,7 @@ import com.freelycar.voice.response.BoxCommand;
 import com.freelycar.voice.response.BoxCommandDate;
 import com.freelycar.voice.response.BoxCommandResponse;
 import com.freelycar.voice.response.BoxResponseTest;
+import com.freelycar.voice.util.MyLogUtils;
 import com.freelycar.voice.util.SafeConnection;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class TestApi {
 
 
     public static void testQueryBoxX(String conDev, String conBoard) throws IOException {
-        Log.d("testQueryBoxX content",conDev+" - "+conBoard);
+        MyLogUtils.file("testQueryBoxX content",conDev+" - "+conBoard);
         BoxResponseTest cmd = new BoxResponseTest(conDev, conBoard);
         BoxCommandResponse response = SafeConnection.postAndGetResponse(URL_QUERY_BOARD, cmd, BoxCommandResponse.class);
         System.out.println("testQueryBoxX  content:  " + Arrays.toString(response.open_array) + "  -  " + response.is_open + "  -  " + response.msg + "  -  " + response.code + "  - ");
@@ -33,7 +34,7 @@ public class TestApi {
     }
 
     static void testQueryBoxX(String conDev, String conBox, String conBoard) throws IOException {
-        Log.d("testQueryBoxX box",conDev+" - "+conBoard+"  -  "+conBox);
+        MyLogUtils.file("testQueryBoxX box",conDev+" - "+conBoard+"  -  "+conBox);
         BoxCommand cmd = new BoxCommand(conDev, conBoard, conBox);
         BoxCommandResponse response = SafeConnection.postAndGetResponse(URL_OPEN_BOX, cmd, BoxCommandResponse.class);
         System.out.println("testQueryBoxX   box:  " + Arrays.toString(response.open_array) + "  -  " + response.is_open + "  -  " + response.msg + "  -  " + response.code + "  - ");

@@ -1,17 +1,22 @@
 package com.freelycar.voice.service;
 
 import android.Manifest;
-import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
+import android.graphics.BitmapFactory;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -20,8 +25,11 @@ import android.os.Message;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 
 import com.blankj.utilcode.BuildConfig;
+import com.freelycar.voice.R;
+import com.freelycar.voice.activity.MainActivity;
 import com.freelycar.voice.adapter.MusicAdapter;
 import com.freelycar.voice.MyApp;
 import com.freelycar.voice.asrt.BaseSpeechRecognizer;
@@ -30,6 +38,7 @@ import com.freelycar.voice.asrt.models.AsrtApiResponse;
 import com.freelycar.voice.constants.AppConstants;
 import com.freelycar.voice.countdowntimer.startTimerUtils;
 import com.freelycar.voice.entity.Music;
+import com.freelycar.voice.receiver.ServiceDieListenerBroadcastReceiver;
 import com.freelycar.voice.text2speech.FreeTts;
 import com.freelycar.voice.text2speech.MediaTTSManager;
 import com.freelycar.voice.util.BroadcastUtils;
@@ -50,8 +59,8 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Locale;
 
-public class freeVoiceService extends Service {
-    private static final String TAG = freeVoiceService.class.getSimpleName();
+public class FreeVoiceService extends Service {
+    private static final String TAG = FreeVoiceService.class.getSimpleName();
 
     static MyHandler mHandler;
     private FreeTts whyTTS;
@@ -88,7 +97,36 @@ public class freeVoiceService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mHandler = new freeVoiceService.MyHandler(Looper.getMainLooper(), new WeakReference<freeVoiceService>(this));
+        String ID = "com.freelycar.plugin";    //这里的id里面输入自己的项目的包的路径
+        String NAME = "download_name";
+        int NOTIFICATION_ID = 1;
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        NotificationCompat.Builder notification; //创建服务对象
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(ID, NAME, NotificationManager.IMPORTANCE_HIGH);
+            channel.enableLights(true);
+            channel.setShowBadge(true);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            manager.createNotificationChannel(channel);
+            notification = new NotificationCompat.Builder(this, "chat").setChannelId(ID);
+        } else {
+            notification = new NotificationCompat.Builder(this, "chat");
+        }
+        notification
+                .setContentTitle("语音识别")
+                //  .setContentText("freelyCarPlugin")
+                .setTicker("识别中")
+                .setSmallIcon(R.drawable.baseline_keyboard_voice_black_24dp)
+                // .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setContentIntent(pendingIntent)
+                .build();
+        Notification notification1 = notification.build();
+        startForeground(NOTIFICATION_ID, notification1);
+        manager.notify(1, notification1);
+
+        mHandler = new FreeVoiceService.MyHandler(Looper.getMainLooper(), new WeakReference<FreeVoiceService>(this));
         //开启严格模式
 //        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 //        StrictMode.setThreadPolicy(policy);
@@ -104,14 +142,13 @@ public class freeVoiceService extends Service {
 //                .start();
         initAudoRe();
         initMusic();
-        initRecordEvent();
         MyLogUtils.file(TAG, "onCreate ");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
         MyLogUtils.file(TAG, "onStartCommand ");
-        startTimerUtils.clickStart(3000);
+        startTimerUtils.clickStart(4000);
         mHandler.sendMessage(mHandler.obtainMessage(200));
         return Service.START_NOT_STICKY;
     }
@@ -188,11 +225,11 @@ public class freeVoiceService extends Service {
                     if ("黄老师怎么样".equals(rsp.result)) {
                         startSpeaker("要是能多带些零食来找我们，我会更喜欢你，么么哒");
                     }
-                    if ("晕哥".equals(rsp.result)||"赟哥".equals(rsp.result)||"yun 哥".equals(rsp.result)) {
+                    if ("晕哥".equals(rsp.result) || "赟哥".equals(rsp.result) || "yun 哥".equals(rsp.result)) {
                         startSpeaker("那是无敌的存在,我永远的神");
                     }
                     if ("小yin".equals(rsp.result) || "小因".equals(rsp.result) || "小殷怎么样".equals(rsp.result)) {
-                        startSpeaker("是我爸爸");
+                        startSpeaker("小殷是我爸爸");
                     }
                     if ("你的名字".equals(rsp.result) || "你叫什么".equals(rsp.result)) {
                         startSpeaker("我叫小易不爱车，或者叫我小易爱车也行");
@@ -231,17 +268,17 @@ public class freeVoiceService extends Service {
                         startSpeaker("阴，东南方转东风 4-5级，晚上可能有雨！");
                     }
                 }
-            }else{
-                MyLogUtils.file(TAG,"startReg sr is null");
+            } else {
+                MyLogUtils.file(TAG, "startReg sr is null");
             }
         }).start();
     }
 
     class MyHandler extends Handler {
 
-        WeakReference<freeVoiceService> serviceWeakReference;
+        WeakReference<FreeVoiceService> serviceWeakReference;
 
-        public MyHandler(@NonNull Looper looper, WeakReference<freeVoiceService> serviceWeakReference) {
+        public MyHandler(@NonNull Looper looper, WeakReference<FreeVoiceService> serviceWeakReference) {
             super(looper);
             this.serviceWeakReference = serviceWeakReference;
         }
@@ -282,6 +319,16 @@ public class freeVoiceService extends Service {
         if (receiver != null) {
             unregisterReceiver(receiver);
         }
+        sendRestartBroadcast();
+    }
+
+    private void sendRestartBroadcast() {
+        //创建意图
+        Intent intent = new Intent();
+        //设置广播频道
+        intent.setAction(AppConstants.RESTART_BROADCAST_ACTION);
+        //按意图发送广播
+        sendBroadcast(intent);
     }
 
     private void initRecord() {
@@ -359,7 +406,7 @@ public class freeVoiceService extends Service {
                     TestApi.testQueryBoxX("FEDD7A6004888FT0#202", boxId);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e("sendRequestTest error", String.valueOf(e));
+                    MyLogUtils.file("sendRequestTest error", String.valueOf(e));
                 }
             }
         }).start();
@@ -401,11 +448,15 @@ public class freeVoiceService extends Service {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            // 获取音乐列表
-            musicList = app.getMusicList();
-            MyLogUtils.file(TAG, "doInBackground: " + musicList);
-            // 故意耗时，要不然扫描太快结束
-            for (long i = 0; i < 2000000000; i++) {
+            try {
+                // 获取音乐列表
+                musicList = app.getMusicList();
+                MyLogUtils.file(TAG, "doInBackground: " + musicList);
+                // 故意耗时，要不然扫描太快结束
+                for (long i = 0; i < 2000000000; i++) {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return null;
         }

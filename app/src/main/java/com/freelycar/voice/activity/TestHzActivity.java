@@ -28,18 +28,6 @@ import java.util.Locale;
 public class TestHzActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private static final String TAG = TestHzActivity.class.getSimpleName();
 
-//    @BindView(R.id.btRecord)
-//    Button btRecord;
-//    @BindView(R.id.btStop)
-//    Button btStop;
-//    @BindView(R.id.tvState)
-//    TextView tvState;
-//    @BindView(R.id.audioView)
-//    AudioView audioView;
-//    @BindView(R.id.spUpStyle)
-//    Spinner spUpStyle;
-//    @BindView(R.id.spDownStyle)
-//    Spinner spDownStyle;
 
     private boolean isStart = false;
     private boolean isPause = false;

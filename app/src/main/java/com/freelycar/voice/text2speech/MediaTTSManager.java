@@ -100,6 +100,7 @@ public class MediaTTSManager implements FreeTts {
             public void onError(String utteranceId) {
                 //播报出错
                 MyLogUtils.file(TAG, "speak onError...");
+               // mHandler.sendMessage(mHandler.obtainMessage(200));
             }
         });
 
@@ -151,6 +152,7 @@ public class MediaTTSManager implements FreeTts {
             MyLogUtils.file(TAG, "speak success");
         } else {
             MyLogUtils.file(TAG, "speak fail");
+            mHandler.sendMessage(mHandler.obtainMessage(200));
         }
         try {
             Thread.sleep(500);
@@ -193,7 +195,7 @@ public class MediaTTSManager implements FreeTts {
 //        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 //            player.setPlaybackParams(player.getPlaybackParams().setSpeed(newRate));
 //        } else {
-//            Log.e(TAG, "setSpeechRate: 版本过低，接口不可用");
+//            MyLogUtils.file(TAG,"setSpeechRate: 版本过低，接口不可用");
 //        }
     }
 
@@ -204,7 +206,7 @@ public class MediaTTSManager implements FreeTts {
 //        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 //            player.setPlaybackParams(player.getPlaybackParams().setPitch(newPitch));
 //        } else {
-//            Log.e(TAG, "setSpeechPitch: 版本过低，接口不可用");
+//            MyLogUtils.file(TAG, "setSpeechPitch: 版本过低，接口不可用");
 //        }
 
     }

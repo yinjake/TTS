@@ -27,7 +27,7 @@ public class DataEncryptInterceptor implements Interceptor {
         String oldBodyStr = requestBuffer.readUtf8();
         requestBuffer.close();
 
-        Log.d("TAG", "the old body str is :" + oldBodyStr);
+        MyLogUtils.file("TAG", "the old body str is :" + oldBodyStr);
 
         //String randomKeyValue = "hello_" + System.currentTimeMillis() + "_world";
         String randomKeyValue = "zhangsanlisiwangwu";

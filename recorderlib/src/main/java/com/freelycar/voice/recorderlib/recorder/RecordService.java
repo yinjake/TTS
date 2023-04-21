@@ -19,8 +19,6 @@ import java.util.Locale;
 
 /**
  * 录音服务
- *
- * @author zhaolewei
  */
 public class RecordService extends Service {
     private static final String TAG = RecordService.class.getSimpleName();
@@ -50,7 +48,53 @@ public class RecordService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Logger.v(TAG,"onBind: ");
         return null;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        super.onUnbind(intent);
+        Logger.v(TAG,"onUnbind: ");
+        return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Logger.v(TAG, " onDestroy: ");
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
+        Logger.v(TAG,"onRebind: ");
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        Logger.v(TAG, "MyApplication onLowMemory");//在最后一个后台进程被杀时调用
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        switch (level) {
+            case TRIM_MEMORY_UI_HIDDEN:
+                Logger.v(TAG ,"onTrimMemory() app的所有ui被隐藏");
+                break;
+            case TRIM_MEMORY_RUNNING_MODERATE:
+            case TRIM_MEMORY_RUNNING_LOW:
+            case TRIM_MEMORY_RUNNING_CRITICAL:
+                Logger.v(TAG, "onTrimMemory() app正常运行，系统可能根据LRU缓存规则杀掉缓存的进程了。");
+                break;
+            case TRIM_MEMORY_BACKGROUND:
+            case TRIM_MEMORY_MODERATE:
+            case TRIM_MEMORY_COMPLETE:
+                Logger.v(TAG, "onTrimMemory() 手机内存很低，系统开始杀app");
+                break;
+        }
+        super.onTrimMemory(level);
     }
 
     @Override
@@ -60,6 +104,7 @@ public class RecordService extends Service {
         }
         Bundle bundle = intent.getExtras();
         if (bundle != null && bundle.containsKey(ACTION_NAME)) {
+            Logger.v(TAG,"onStartCommand bundle: "+bundle.toString());
             switch (bundle.getInt(ACTION_NAME, ACTION_INVALID)) {
                 case ACTION_START_RECORD:
                     doStartRecording(bundle.getString(PARAM_PATH));
@@ -78,7 +123,7 @@ public class RecordService extends Service {
             }
             return START_STICKY;
         }
-
+        Logger.v(TAG,"onStartCommand");
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -210,10 +255,6 @@ public class RecordService extends Service {
             return null;
         }
         String fileName = "data";
-        //String fileName = String.format(Locale.getDefault(), "record_%s", FileUtils.getNowString(new SimpleDateFormat("yyyyMMdd_HH_mm_ss", Locale.SIMPLIFIED_CHINESE)));
-        Log.e(TAG,"创建的文件名11: "+String.format(Locale.getDefault(), "%s%s%s", fileDir, fileName, currentConfig.getFormat().getExtension()));
-        Log.e(TAG,"创建的文件名22: "+Locale.getDefault()+" : "+fileName+" : "+fileDir);
-        Log.e(TAG,"创建的文件名33: "+ currentConfig.getFormat().getExtension());
         return String.format(Locale.getDefault(), "%s%s%s", fileDir, fileName, currentConfig.getFormat().getExtension());
     }
 

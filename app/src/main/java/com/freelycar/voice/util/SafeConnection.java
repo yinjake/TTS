@@ -2,6 +2,7 @@ package com.freelycar.voice.util;
 
 import android.util.Log;
 
+import com.freelycar.voice.service.FreeVoiceService;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class SafeConnection {
+	private static final String TAG = FreeVoiceService.class.getSimpleName();
 
 	private final static int TIME_WAIVER_MS = 1000 * 600;
 	private final static String SECURITY_KEY = "zkjthVigevWLgz7tVOLAcIaeM30ypCuwHimSFZU96c2zkNnCRkVfCd4OFWWxCOQ3nLG9rU1HnXX1k8LDSnNxyeGKORxVzfP5yjaXDQC6yFeI31FPjBha089lDvu3F9PR";
@@ -51,7 +53,7 @@ public class SafeConnection {
 
 	private static boolean verifyDataWithDigest(DataWithDigest d) {
 		String digest = ShaUtil.toSHA1(d.timestamp + d.jsondata + SECURITY_KEY + d.nonce);
-		Log.e("test","verifyDataWithDigest:  "+ digest+"  -  "+d.digest+"  -  "+d.nonce+"  -  "+d.timestamp+  "  -  ");
+		MyLogUtils.file(TAG,"verifyDataWithDigest:  "+ digest+"  -  "+d.digest+"  -  "+d.nonce+"  -  "+d.timestamp+  "  -  ");
 		return digest != null && digest.equals(d.digest) && d.timestamp > System.currentTimeMillis() - TIME_WAIVER_MS;
 
 	}
@@ -60,7 +62,7 @@ public class SafeConnection {
 		if (verifyDataWithDigest(dataWithDigest)) {
 			Gson gson = new Gson();
 			//logger.info(dataWithDigest.jsondata);
-			Log.e("test","getOrignalObject:  "+ dataWithDigest.jsondata);
+			MyLogUtils.file(TAG,"getOrignalObject:  "+ dataWithDigest.jsondata);
 			return gson.fromJson(dataWithDigest.jsondata, classOfT);
 		} else {
 			//logger.error("Safe connection verify failed ");
@@ -75,7 +77,7 @@ public class SafeConnection {
 		String jsonData = gson.toJson(obj);
 		//logger.info(jsonData);
 		String digest = ShaUtil.toSHA1(timestamp + jsonData + SECURITY_KEY + nonce);
-		Log.e("test","encoderForObject:  "+ digest+"  -  "+jsonData+"  -  "+nonce+"  -  "+timestamp);
+		MyLogUtils.file(TAG,"encoderForObject:  "+ digest+"  -  "+jsonData+"  -  "+nonce+"  -  "+timestamp);
 		return new DataWithDigest(jsonData, timestamp, nonce, digest);
 	}
 
@@ -111,7 +113,7 @@ public class SafeConnection {
 			final FormBody.Builder builder = data.toFormBuilder();
 			final Request request = new Request.Builder().url(url).post(builder.build()).build();
 			final Response response = mClient.newCall(request).execute();
-			Log.e("test","postAndGetResponse:  "+ request.url()+"  -  "+request.headers()+"  -  "+request.method()+"  -  "+response.isSuccessful()+"  - ");
+			MyLogUtils.file(TAG,"postAndGetResponse:  "+ request.url()+"  -  "+request.headers()+"  -  "+request.method()+"  -  "+response.isSuccessful()+"  - ");
 			if (response.isSuccessful()) {
 				String x = response.body().string();
 				return SafeConnection.decodeFromString(x, classOfT);

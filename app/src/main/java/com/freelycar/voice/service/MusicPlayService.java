@@ -6,15 +6,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.IBinder;
+
+import androidx.annotation.RequiresApi;
 
 import com.freelycar.voice.MyApp;
 import com.freelycar.voice.constants.AppConstants;
 import com.freelycar.voice.entity.Music;
 import com.freelycar.voice.util.MyLogUtils;
+import com.freelycar.voice.util.ReduceThreadPool;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.IntStream;
 
 
 public class MusicPlayService extends Service implements AppConstants {
@@ -33,6 +38,7 @@ public class MusicPlayService extends Service implements AppConstants {
         return null;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate() {
         super.onCreate();
@@ -48,29 +54,46 @@ public class MusicPlayService extends Service implements AppConstants {
                 nextMusic();
             }
         });
-
-        thread = new Thread((Runnable) () -> {
-            while (isRunning) {
-                try {
-                    if (mp.isPlaying()) {
-                        Intent intent = new Intent();
-                        intent.setAction(INTENT_ACTION_UPDATE_PROGRESS);
-                        app.setCurrentPosition(mp.getCurrentPosition());
-                        intent.putExtra(DURATION, mp.getDuration());
-                        sendBroadcast(intent);
-//                        try {
-//                            Thread.sleep(500);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
+        ReduceThreadPool threadPool = new ReduceThreadPool(10);
+        IntStream.range(0, 10).forEach((i) -> {
+            threadPool.execute(() -> {
+                while (isRunning) {
+                    try {
+                        if (mp.isPlaying()) {
+                            Intent intent = new Intent();
+                            intent.setAction(INTENT_ACTION_UPDATE_PROGRESS);
+                            app.setCurrentPosition(mp.getCurrentPosition());
+                            intent.putExtra(DURATION, mp.getDuration());
+                            sendBroadcast(intent);
+                        }
+                    } catch (IllegalStateException | NullPointerException e) {
+                        e.printStackTrace();
                     }
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
                 }
-            }
+                System.out.println(Thread.currentThread().getName() + "--->>ReduceThreadPool");
+            });
         });
-
-        thread.start();
+//        thread = new Thread((Runnable) () -> {
+//            while (isRunning) {
+//                try {
+//                    if (mp.isPlaying()) {
+//                        Intent intent = new Intent();
+//                        intent.setAction(INTENT_ACTION_UPDATE_PROGRESS);
+//                        app.setCurrentPosition(mp.getCurrentPosition());
+//                        intent.putExtra(DURATION, mp.getDuration());
+//                        sendBroadcast(intent);
+////                        try {
+////                            Thread.sleep(500);
+////                        } catch (InterruptedException e) {
+////                            e.printStackTrace();
+////                        }
+//                    }
+//                } catch (IllegalStateException|NullPointerException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//        thread.start();
         receiver = new MyMusicReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(INTENT_ACTION_PLAY_OR_PAUSE);
@@ -106,9 +129,9 @@ public class MusicPlayService extends Service implements AppConstants {
             mp = null;
         }
         unregisterReceiver(receiver);
-        isRunning = false;
-        thread.interrupt();
-        thread = null;
+        //isRunning = false;
+        //thread.interrupt();
+        //thread = null;
     }
 
     private void play() {

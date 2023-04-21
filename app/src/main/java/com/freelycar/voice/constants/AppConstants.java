@@ -8,6 +8,7 @@ public interface AppConstants {
     static String INTENT_ACTION_NEXT = TAG + ".intent.action.NEXT"; // 广播频道常量：播放下一首
     static String INTENT_ACTION_UPDATE_PROGRESS = TAG + ".intent.action.UPDATE_PROGRESS"; // 广播频道常量：更新播放进度
     static String INTENT_ACTION_USER_CHANGE_PROGRESS = TAG + ".intent.action.USER_CHANGE_PROGRESS";//广播频道常量：用户改变播放进度
+    public static final String RESTART_BROADCAST_ACTION = "com.freelycar.voice.ServiceDieListenerBroadcastReceiver";
     static String CONTROL_ICON = "control_icon"; // 控制图标名称常量
     static String DURATION = "duration"; // 播放时长名称常量
     static String CURRENT_POSITION = "current_position"; // 当前播放位置名称常量

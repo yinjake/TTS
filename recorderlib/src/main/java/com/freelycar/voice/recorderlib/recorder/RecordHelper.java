@@ -98,7 +98,6 @@ public class RecordHelper {
             Logger.e(TAG, "状态异常当前状态： %s", state.name());
             return;
         }
-        Log.e("我看看你是什么: ","" +filePath);
         resultFile = new File(filePath);
         String tempFilePath = getTempFilePath();
 
