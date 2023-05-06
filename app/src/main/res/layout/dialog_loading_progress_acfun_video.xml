@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/TransColor"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="20dp">
+<!--    android:background="@drawable/aa_dialog_bg"-->
+<!--    <ProgressBar-->
+<!--        android:id="@+id/loading_progressBar"-->
+<!--        android:layout_width="320dip"-->
+<!--        android:layout_height="320dip"-->
+<!--        android:layout_margin="12.0dip"-->
+<!--        android:indeterminateDrawable="@drawable/animation_loading" />-->
+
+<!--    app:lottie_rawRes="@raw/happy_emoj"-->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        app:lottie_autoPlay="true"
+        app:lottie_rawRes="@raw/happy_emoj"
+        app:lottie_loop="true"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/tv_reminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="正在加载数据..."
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/pink_acfun"
+        android:textSize="@android:dimen/app_icon_size" />
+
+</LinearLayout>

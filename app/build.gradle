@@ -1,12 +1,16 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt' //kapt3插件
+apply plugin: 'kotlin-android-extensions'
 android {
-    compileSdkVersion 30
+    compileSdkVersion 29
+    buildToolsVersion = '29.0.3'
+
     defaultConfig {
-        applicationId "com.freelycar.voice"
-        minSdkVersion 23
-        targetSdkVersion 28
-        versionCode 1
+        applicationId "com.freelycar.demo"
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 5
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -14,9 +18,12 @@ android {
             abiFilters "arm64-v8a"
         }
     }
+    useLibrary "org.apache.http.legacy"
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true      // 开启混淆
+            zipAlignEnabled true    // 已启用压缩
+            shrinkResources true    // 缩减资源
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -24,13 +31,41 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            if (variant.buildType.name.equals('release') || variant.buildType.name.equals('debug')) {
+                outputFileName = "freelycarDemo.apk"
+            }
+        }
+    }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.0'
     //OkHttp的依赖包
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+  //  implementation 'com.google.firebase:firebase-crashlytics-buildtools:2.5.2'
+
+    compileOnly 'androidx.appcompat:appcompat:1.1.0'
+    compileOnly 'androidx.core:core-ktx:1.3.1'
+    compileOnly 'androidx.constraintlayout:constraintlayout:2.0.1'
+
+    compileOnly 'androidx.recyclerview:recyclerview:1.1.0'
+
+    compileOnly 'com.github.bumptech.glide:glide:4.8.0'
+    kapt 'com.github.bumptech.glide:compiler:4.8.0'
+//    implementation "androidx.core:core-ktx:1.2.0"
+    compileOnly 'androidx.exifinterface:exifinterface:1.3.0'
+
+    compileOnly 'io.reactivex.rxjava2:rxjava:2.2.14'
+    compileOnly 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    compileOnly 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -41,10 +76,30 @@ dependencies {
     implementation 'com.blankj:utilcode:1.30.7'
 // https://mvnrepository.com/artifact/com.yanzhenjie/permission
     implementation 'com.yanzhenjie:permission:2.0.2'
-    implementation project(path: ':recorderlib')
   //  implementation 'com.github.zhaolewei:Logger:1.0.1'
     implementation 'cn.hutool:hutool-all:5.8.6'
     implementation 'com.google.code.gson:gson:2.8.1'
    // implementation 'org.jetbrains:annotations:20.1.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
+
+    //流式布局
+    compileOnly 'com.google.android:flexbox:0.3.2'
+    //沉浸式
+    compileOnly 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+
+    //Log日志格式美化包
+    compileOnly 'com.orhanobut:logger:2.2.0'
+
+    //压缩与加密
+    implementation 'net.lingala.zip4j:zip4j:1.3.2'
+
+    compileOnly 'org.greenrobot:greendao:3.2.2'
+    compileOnly 'androidx.exifinterface:exifinterface:1.3.0'
+    implementation 'com.google.guava:guava:27.1-jre'
+    implementation 'org.apache.commons:commons-lang3:3.5'
+    implementation 'joda-time:joda-time:2.9.9'
+
+    implementation "com.airbnb.android:lottie:$lottieVersion"
+
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 }

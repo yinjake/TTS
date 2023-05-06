@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.freelycar.voice">
+    package="com.freelycar.demo">
 
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
@@ -18,7 +17,7 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
+    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
 
     <!--    静默安装相关-->
     <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
@@ -38,64 +37,105 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
+
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 打开闪光灯 -->
+    <uses-permission android:name="android.permission.FLASHLIGHT" /> <!-- 许可使用照相机 -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- 许可调用相机硬件 -->
+    <uses-feature android:name="android.hardware.camera" /> <!-- 许可调用相机自动对焦 -->
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.PARTIAL_WAKE_LOCK " /> <!-- 保持CPU运转，屏幕和键盘背光可能关闭 -->
+    <uses-permission android:name="android.permission.SCREEN_DIM_WAKE_LOCK  " /> <!-- 保持CPU运转，保持屏幕常亮(亮度低)，键盘背光可能关闭 -->
+    <uses-permission android:name="android.permission.SCREEN_BRIGHT_WAKE_LOCK   " /> <!-- 保持CPU运转，保持屏幕和键盘背光高亮 -->
+    <uses-permission android:name="android.permission.FULL_WAKE_LOCK   " /> <!-- 保持CPU运转，保持屏幕和键盘背光高亮(亮度最高) -->
+    <uses-permission android:name="android.permission.ACQUIRE_CAUSES_WAKEUP    " /> <!-- 强制亮屏，针对一些必须通知用户的操作 -->
+    <uses-permission android:name="android.permission.ON_AFTER_RELEASE    " /> <!-- 当锁被释放时，保持亮屏一段时间(如果释放时屏幕没亮，则不会亮屏) -->
+    <uses-permission android:name="android.permission.PROXIMITY_SCREEN_OFF_WAKE_LOCK    " /> <!-- 和接近传感器配合,当用户接近屏幕时黑屏,离开时亮屏(例如打电话),该API在API21后开放,以前被hide -->
 
     <application
-        android:name="com.freelycar.voice.MyApp"
+        android:name="com.freelycar.demo.MyApp"
         android:allowBackup="true"
-        android:largeHeap="true"
-        android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:largeHeap="true"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
 
+        <!--        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);-->
         <activity
-            android:name="com.freelycar.voice.activity.MainActivity"
+            android:name="com.freelycar.demo.activity.MainActivity"
+            android:enabled="true"
             android:excludeFromRecents="true"
             android:exported="true"
-            android:enabled="true"
             android:finishOnTaskLaunch="false"
             android:launchMode="singleInstance"
             android:theme="@style/KeepLiveTheme" />
+        <!--        android:theme="@style/KeepLiveTheme"-->
+        <!--        android:theme="THEME.APPCOMPAT.DIALOG.ALERT"-->
 
         <activity-alias
             android:name=".Launcher"
             android:exported="true"
-            android:targetActivity="com.freelycar.voice.activity.MainActivity">
+            android:targetActivity="com.freelycar.demo.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity-alias>
 
+
         <activity
-            android:name=".activity.TestHzActivity"
+            android:name="com.freelycar.demo.activity.IssueReproActivity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert" />
+        <activity android:name="com.freelycar.demo.activity.DynamicActivity" />
+        <activity
+            android:name="com.freelycar.demo.activity.DialogActivity"
+            android:theme="@style/dialogstyle" />
+        <activity
+            android:name="com.freelycar.demo.activity.DialogActivityPm"
+            android:theme="@style/dialogstyle" />
+        <activity
+            android:name="com.freelycar.demo.activity.DialogActivityThu"
+            android:theme="@style/dialogstyle" />
+        <activity
+            android:name="com.freelycar.demo.activity.TrainActivity"
+            android:theme="@style/dialogstyle" />
+        <!--        android:theme="@style/Theme.AppCompat.Light.Dialog.Alert"-->
+        <!--        android:theme="@style/dialogstyle"-->
+        <activity
+            android:name="com.freelycar.demo.activity.RippleActivity"
+            android:theme="@style/dialogstyle" />
+        <activity
+            android:name="com.freelycar.demo.activity.TestHzActivity"
             android:label="test"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
 
         <service
-            android:name="com.freelycar.voice.recorderlib.recorder.RecordService"
+            android:name="com.freelycar.demo.service.MusicPlayService"
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".service.MusicPlayService"
+            android:name="com.freelycar.demo.service.FreeDemoService"
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".service.FreeVoiceService"
+            android:name="com.freelycar.demo.service.LogService"
             android:enabled="true"
             android:exported="false" />
+
         <receiver
-            android:name="com.freelycar.voice.receiver.ServiceDieListenerBroadcastReceiver"
+            android:name="com.freelycar.demo.receiver.ServiceDieListenerBroadcastReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.freelycar.voice.ServiceDieListenerBroadcastReceiver" />
+                <action android:name="com.freelycar.demo.ServiceDieListenerBroadcastReceiver" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.freelycar.voice.receiver.StartBroadcastReceiver"
+            android:name="com.freelycar.demo.receiver.StartBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -103,6 +143,23 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
+
+
+        <provider
+            android:name="com.freelycar.demo.rxkit.crash.TCrashProvider"
+            android:authorities="${applicationId}.tcrashprovider"
+            android:exported="false"
+            android:initOrder="101" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

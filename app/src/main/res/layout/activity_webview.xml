@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_web_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.ActivityWebView">
+
+    <com.freelycar.demo.view.RxTitle
+        android:id="@+id/web_rx_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimary"
+        android:clipToPadding="true"
+        android:fitsSystemWindows="true"
+        android:paddingTop="@dimen/dp_20"
+        app:title="WebView" />
+
+    <include layout="@layout/include_webview" />
+
+</LinearLayout>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/TransColor"
+    android:orientation="vertical">
+
+    <com.freelycar.demo.view.RippleAnimationView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/layout_RippleAnimation"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        app:ripple_anim_amount="5"
+        app:ripple_anim_color="@color/rippleColor"
+        app:ripple_anim_duration="2500"
+        app:ripple_anim_radius="@dimen/rippleRadius"
+        app:ripple_anim_scale="6"
+        android:layout_gravity="bottom"
+        app:ripple_anim_type="fillRipple">
+
+        <ImageView
+            android:id="@+id/ImageView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/music" />
+
+    </com.freelycar.demo.view.RippleAnimationView>
+
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center"-->
+<!--        android:text="点击识别音乐"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        android:textSize="14sp" />-->
+
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:gravity="center"-->
+<!--        android:text="听歌识曲，识别你周围播放的歌"-->
+<!--        android:textColor="@android:color/darker_gray"-->
+<!--        android:textSize="12sp" />-->
+
+</LinearLayout>

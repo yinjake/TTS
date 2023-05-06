@@ -160,7 +160,7 @@
         android:onClick="onTestReg"
         android:text="识别" />
 
-    <com.freelycar.voice.customView.AudioView
+    <com.freelycar.demo.customView.AudioView
         android:id="@+id/audioView"
         android:layout_width="match_parent"
         android:layout_height="150dp" />

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Gray5F"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/ll_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp_5">
+
+        <ImageView
+            android:id="@+id/iv_progress_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:maxHeight="@dimen/dp_50"
+            android:minWidth="@dimen/dp_50"
+            android:scaleType="fitCenter" />
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/layout_progress_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/layout_secondary_progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/Gray7F"
+            android:orientation="horizontal" />
+
+        <LinearLayout
+            android:id="@+id/layout_progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/TransColor"
+            android:orientation="horizontal" />
+
+    </RelativeLayout>
+
+</LinearLayout>

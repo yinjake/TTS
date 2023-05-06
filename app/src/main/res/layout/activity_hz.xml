@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <ImageView
         android:layout_width="match_parent"
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="60dp">
 
-            <com.freelycar.voice.customView.AudioView
+            <com.freelycar.demo.customView.AudioView
                 android:id="@+id/audioView"
                 android:layout_width="match_parent"
                 android:layout_height="160dp" />
