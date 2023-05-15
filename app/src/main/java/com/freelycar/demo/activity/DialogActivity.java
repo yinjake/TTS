@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+
 import com.freelycar.demo.constants.AppConstants;
 import com.freelycar.demo.countdowntimer.CountDownTimerSupport;
 import com.freelycar.demo.countdowntimer.OnCountDownTimerListener;
@@ -66,11 +67,12 @@ public class DialogActivity extends Activity {
     public void playNotificationSound() {
         try {
             Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                    + "://" + this.getPackageName() + "/raw/train");
+                    + "://" + this.getPackageName() + "/raw/daka1");
             Ringtone r = RingtoneManager.getRingtone(this, alarmSound);
             r.play();
+            MyLogUtils.file(TAG, "playNotificationSound");
         } catch (Exception e) {
-            MyLogUtils.file(TAG,"playNotificationSound: fail");
+            MyLogUtils.file(TAG, "playNotificationSound: fail");
             e.printStackTrace();
         }
     }
@@ -78,7 +80,7 @@ public class DialogActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-       // MyLogUtils.file(TAG, " onDestroy: " + MyApp.isBackground());
+        // MyLogUtils.file(TAG, " onDestroy: " + MyApp.isBackground());
         unregisterReceiver(receiver);
         mRxDialogMonLoading.dismiss();
         mRxDialogMonLoading = null;
@@ -86,6 +88,7 @@ public class DialogActivity extends Activity {
         mTimer = null;
         //Runtime.getRuntime().gc();
     }
+
 
     private void initUtils() {
 //        Looper.prepare();

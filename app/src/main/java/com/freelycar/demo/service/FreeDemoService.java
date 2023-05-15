@@ -76,7 +76,7 @@ public class FreeDemoService extends Service {
         public void onReceive(Context context, Intent intent) {
             MyLogUtils.file(TAG, "ApplicationReceiver: " + intent.getAction());
             // abortBroadcast();//截断广播
-            intent = new Intent(context, RippleActivity.class);
+            intent = new Intent(context, DialogActivity.class);
             // 此处必须设置flag
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);

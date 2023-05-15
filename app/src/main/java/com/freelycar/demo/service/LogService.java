@@ -5,9 +5,13 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -192,7 +196,7 @@ public class LogService extends Service {
 //        MyLogUtils.file(TAG, "666: " + calendar.get(Calendar.MINUTE));
 //        MyLogUtils.file(TAG, "777: " + calendar.get(Calendar.HOUR_OF_DAY));
 //        MyLogUtils.file(TAG, "888: " + calendar.get(Calendar.HOUR));
-        if (calendar.get(Calendar.MINUTE) == 47 && calendar.get(Calendar.HOUR_OF_DAY) == 8) {
+        if (calendar.get(Calendar.MINUTE) >= 47 && calendar.get(Calendar.MINUTE) <= 57 && calendar.get(Calendar.HOUR_OF_DAY) == 8) {
             MyLogUtils.file(TAG, "111: true");
             Intent intent = new Intent(this, DialogActivityPm.class);
             // 此处必须设置flag
@@ -204,6 +208,7 @@ public class LogService extends Service {
             // 此处必须设置flag
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
+          //  playNotificationSound("daka1");
         }
 
         if (calendar.get(Calendar.MINUTE) == 1 && calendar.get(Calendar.HOUR_OF_DAY) == 18 && calendar.getTime().getDay() == 5) {

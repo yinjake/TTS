@@ -46,11 +46,12 @@ public class DialogActivityPm extends Activity {
     public void playNotificationSound() {
         try {
             Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                    + "://" + this.getPackageName() + "/raw/train");
+                    + "://" + this.getPackageName() + "/raw/daka2");
             Ringtone r = RingtoneManager.getRingtone(this, alarmSound);
             r.play();
+            MyLogUtils.file(TAG, "playNotificationSound");
         } catch (Exception e) {
-            MyLogUtils.file(TAG,"playNotificationSound: fail");
+            MyLogUtils.file(TAG, "playNotificationSound: fail");
             e.printStackTrace();
         }
     }
